@@ -1,0 +1,38 @@
+//Design Code
+module demux1x2(output out1,out2,input sel,in);
+  assign out1=in&(~sel);
+  assign out2=in&sel;
+endmodule
+
+module nand_gate(output nand_op,and_op,input a,b);
+  wire o1,o2;
+  demux1x2 a1(o1,o2,b,a);
+  demux1x2 a2(nand_op,and_op,o2,1);
+endmodule
+
+//Test Bench Code
+module tb();
+  wire nand_op,and_op;
+  reg a,b;
+  nand_gate DUT(nand_op,and_op,a,b);
+  integer i;
+  initial
+    begin
+      for(i=0;i<4;i=i+1)
+        begin
+          {a,b}=i;
+          #10;
+        end
+    end
+  
+  initial
+    begin
+      $timeformat(-9,0,"ns",10);
+      $monitor("time=%0t,a=%b,b=%b,nand_op=%b,and_op=%b",$time,a,b,nand_op,and_op);
+    end
+  initial
+    begin
+      $dumpfile("test.vcd");
+      $dumpvars(1);
+    end
+endmodule
